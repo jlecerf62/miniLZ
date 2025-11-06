@@ -1,0 +1,39 @@
+user_ocid        = "ocid1.user.oc1..aaaaaa...."
+fingerprint      = "a7:5e:96:60:6....d"
+private_key_path = "/Users/....pem"
+region           = "eu-frankfurt-1"
+tenancy_ocid     = "ocid1.tenancy.oc1..aaaaaaaauyaogmws....."
+
+secure_vcn_cidr_blocks= ["10.0.0.0/16"]
+lb_subnet_cidr = "10.0.1.0/24"
+app_subnet_cidr = "10.0.2.0/24"
+db_subnet_cidr = "10.0.3.0/24"
+
+# -----------------------------
+# IPSec configuration (optional)
+# Uncomment and set values
+# -----------------------------
+# ipsec_enabled               = true
+# ipsec_cpe_public_ip         = "X.X.X.X"
+# ipsec_onprem_cidrs          = ["192.168.10.0/24", "172.16.50.0/24"]
+# ipsec_routing_type          = "STATIC" # or "POLICY" or "BGP"
+
+# Policy-based selectors (used if ipsec_routing_type == "POLICY" or ipsec_policy_based_enabled == true)
+# ipsec_policy_based_enabled    = false
+# ipsec_policy_local_selectors  = ["10.0.2.0/24", "10.0.3.0/24"]
+# ipsec_policy_remote_selectors = ["192.168.10.0/24"]
+
+# Tunnel parameters (defaults shown; override only if needed)
+# ipsec_ike_version                    = "V2"         # "V1" or "V2"
+# ipsec_nat_t_setting                  = "ENABLED"    # "AUTO" | "ENABLED" | "DISABLED"
+# ipsec_dpd_timeout_in_seconds         = 30           # e.g. 20-60
+# ipsec_phase1_encryption_algorithms   = ["AES_256_CBC"]
+# ipsec_phase1_authentication_algorithms = ["SHA2_384"]
+# ipsec_phase1_dh_groups               = ["GROUP20"]
+# ipsec_phase1_lifetime_in_seconds     = 28800
+# ipsec_phase2_encryption_algorithms   = ["AES_256_GCM"]
+# ipsec_phase2_authentication_algorithms = ["HMAC_SHA2_256_128"]
+# ipsec_phase2_pfs_dh_groups           = ["GROUP5"]
+# ipsec_phase2_lifetime_in_seconds     = 3600
+# ipsec_tunnel1_psk                    = null         # set to a string to manage PSK; Only letters, numbers, spaces are allowed
+# ipsec_tunnel2_psk                    = null         # set to a string to manage PSK; Only letters, numbers, spaces are allowed

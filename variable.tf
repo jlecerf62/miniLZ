@@ -50,12 +50,17 @@ variable "db_subnet_cidr" {
 variable "ipsec_enabled" {
   description = "Enable creation of IPSec site-to-site VPN resources (CPE, IPsec connection, tunnel settings). When false, resources are skipped and route rules are not added."
   type        = bool
-  default     = true
+  default     = false
 }
 
 variable "ipsec_cpe_public_ip" {
-  description = "Public IP address of the on-premises VPN device (CPE)."
+  description = "Public IP address of the on-premises VPN device (CPE). Optional when ipsec_enabled is false."
   type        = string
+  default     = null
+  validation {
+    condition     = var.ipsec_enabled ? (var.ipsec_cpe_public_ip != null && can(regex("^([0-9]{1,3}\\.){3}[0-9]{1,3}$", var.ipsec_cpe_public_ip))) : true
+    error_message = "When ipsec_enabled is true, ipsec_cpe_public_ip must be set to a valid IPv4 address."
+  }
 }
 
 variable "ipsec_cpe_display_name" {
@@ -142,13 +147,13 @@ variable "ipsec_phase1_encryption_algorithms" {
 variable "ipsec_phase1_authentication_algorithms" {
   description = "Phase 1 (IKE) authentication algorithms."
   type        = list(string)
-  default     = ["SHA2_256"]
+  default     = ["SHA2_384"]
 }
 
 variable "ipsec_phase1_dh_groups" {
   description = "Phase 1 (IKE) DH groups."
   type        = list(string)
-  default     = ["GROUP14"]
+  default     = ["GROUP20"]
 }
 
 variable "ipsec_phase1_lifetime_in_seconds" {
@@ -161,7 +166,7 @@ variable "ipsec_phase1_lifetime_in_seconds" {
 variable "ipsec_phase2_encryption_algorithms" {
   description = "Phase 2 (IPSec) encryption algorithms."
   type        = list(string)
-  default     = ["AES_256_CBC"]
+  default     = ["AES_256_GCM"]
 }
 
 variable "ipsec_phase2_authentication_algorithms" {
@@ -173,7 +178,7 @@ variable "ipsec_phase2_authentication_algorithms" {
 variable "ipsec_phase2_pfs_dh_groups" {
   description = "Phase 2 (IPSec) PFS DH groups."
   type        = list(string)
-  default     = ["GROUP14"]
+  default     = ["GROUP5"]
 }
 
 variable "ipsec_phase2_lifetime_in_seconds" {
