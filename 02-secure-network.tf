@@ -65,12 +65,12 @@ resource "oci_core_route_table" "lb_rt" {
   display_name   = "lb-rt"
 
   dynamic "route_rules" {
-    for_each = local.rfc1918
+    for_each = var.ipsec_enabled ? var.ipsec_onprem_cidrs : []
     content {
       destination       = route_rules.value
       destination_type  = "CIDR_BLOCK"
       network_entity_id = oci_core_drg.secure_drg.id
-      description       = "RFC1918 to DRG"
+      description       = "On-prem to DRG"
     }
   }
 
@@ -89,12 +89,12 @@ resource "oci_core_route_table" "app_rt" {
   display_name   = "app-rt"
 
   dynamic "route_rules" {
-    for_each = local.rfc1918
+    for_each = var.ipsec_enabled ? var.ipsec_onprem_cidrs : []
     content {
       destination       = route_rules.value
       destination_type  = "CIDR_BLOCK"
       network_entity_id = oci_core_drg.secure_drg.id
-      description       = "RFC1918 to DRG"
+      description       = "On-prem to DRG"
     }
   }
 
@@ -120,12 +120,12 @@ resource "oci_core_route_table" "db_rt" {
   display_name   = "db-rt"
 
   dynamic "route_rules" {
-    for_each = local.rfc1918
+    for_each = var.ipsec_enabled ? var.ipsec_onprem_cidrs : []
     content {
       destination       = route_rules.value
       destination_type  = "CIDR_BLOCK"
       network_entity_id = oci_core_drg.secure_drg.id
-      description       = "RFC1918 to DRG"
+      description       = "On-prem to DRG"
     }
   }
 
