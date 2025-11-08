@@ -4,6 +4,9 @@ private_key_path = "/Users/....pem"
 region           = "eu-frankfurt-1"
 tenancy_ocid     = "ocid1.tenancy.oc1..aaaaaaaauyaogmws....."
 
+# Optional: deploy under a specific parent compartment (defaults to tenancy_ocid if unset)
+# deployment_compartment_ocid = "ocid1.compartment.oc1..xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx"
+
 secure_vcn_cidr_blocks= ["10.0.0.0/16"]
 lb_subnet_cidr = "10.0.1.0/24"
 app_subnet_cidr = "10.0.2.0/24"

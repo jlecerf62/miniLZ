@@ -81,6 +81,9 @@ Authentication (provider.tf expects these in tfvars):
 - region (string)
 - tenancy_ocid (string)
 
+Deployment scope:
+- deployment_compartment_ocid (string, optional) — if set, the stack creates its child compartments (secured/non-secured) and the Cloud Guard security recipe under this parent compartment. If unset, it defaults to tenancy_ocid (root-level deployment).
+
 Network CIDRs:
 
 - secure_vcn_cidr_blocks (list(string))

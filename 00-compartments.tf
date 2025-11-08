@@ -1,7 +1,11 @@
 
+locals {
+  parent_compartment_ocid = coalesce(var.deployment_compartment_ocid, var.tenancy_ocid)
+}
+
 resource "oci_identity_compartment" "unsecure_compartment" {
   #Required
-  compartment_id = var.tenancy_ocid
+  compartment_id = local.parent_compartment_ocid
   description    = "Non-secured/Public compartment"
   name           = "non-secured_compartment"
 }
@@ -10,7 +14,7 @@ resource "oci_identity_compartment" "unsecure_compartment" {
 
 resource "oci_identity_compartment" "secure_compartment" {
   #Required
-  compartment_id = var.tenancy_ocid
+  compartment_id = local.parent_compartment_ocid
   description    = "secure compartment"
   name           = "secured_compartment"
 
@@ -26,7 +30,7 @@ resource "oci_cloud_guard_security_zone" "secure_security_zone" {
 
 resource "oci_cloud_guard_security_recipe" "custom_security_recipe" {
   #custom recipe removes the vault encryption requirement
-  compartment_id    = var.tenancy_ocid
+  compartment_id    = local.parent_compartment_ocid
   display_name      = "Custom security zone recipe"
   security_policies = [
       "ocid1.securityzonessecuritypolicy.oc1..aaaaaaaadhzmdbzaemersmvdahgtc5dbc4bf7l2rlsi6aaqwgq5ywokt4nrq",

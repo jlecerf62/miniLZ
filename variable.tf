@@ -23,6 +23,14 @@ variable "region" {
   type        = string
 }
 
+# Optional: deploy under a specific parent compartment instead of tenancy root.
+# If null, the stack will default to the tenancy OCID.
+variable "deployment_compartment_ocid" {
+  description = "OCID of the parent compartment under which this stack creates its child compartments and related resources. If unset, defaults to tenancy_ocid."
+  type        = string
+  default     = null
+}
+
 variable "secure_vcn_cidr_blocks" {
   description = "CIDR blocks for the secure VCN"
   type        = list(string)
