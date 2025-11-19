@@ -7,7 +7,9 @@ This Terraform stack provisions:
 - Secure VCN with DRG, DRG attachment, NAT Gateway, Service Gateway
 - Three private subnets (LB/App/DB) with appropriate route tables
 - IPSec Site-to-Site VPN (CPE, IPsec connection, per-tunnel management) with most parameters exposed as variables
-  - Default routing mode: STATIC, with option to use POLICY-based selectors (and room to extend to BGP)
+- Default routing mode: STATIC, with option to use POLICY-based selectors (and room to extend to BGP)
+
+[![Deploy to Oracle Cloud](https://oci-resourcemanager-plugin.plugins.oci.oraclecloud.com/latest/deploy-to-oracle-cloud.svg)](https://cloud.oracle.com/resourcemanager/stacks/create?zipUrl=https://github.com/jlecerf62/miniLZ/releases/download/latest/miniLZ.zip)
 
 ## Topology
 
@@ -82,6 +84,7 @@ Authentication (provider.tf expects these in tfvars):
 - tenancy_ocid (string)
 
 Deployment scope:
+
 - deployment_compartment_ocid (string, optional) — if set, the stack creates its child compartments (secured/non-secured) and the Cloud Guard security recipe under this parent compartment. If unset, it defaults to tenancy_ocid (root-level deployment).
 
 Network CIDRs:

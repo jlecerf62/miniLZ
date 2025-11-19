@@ -1,0 +1,320 @@
+title: "miniLZ - OCI Networking with IPSec VPN"
+description: "OCI Resource Manager stack schema for mini Landing Zone networking with optional IPSec VPN."
+schemaVersion: 1.1.0
+version: "2025-11-08"
+
+variableGroups:
+  - title: "Authentication"
+    visible: false
+    variables:
+      - tenancy_ocid
+      - user_ocid
+      - fingerprint
+      - private_key_path
+      - region
+
+  - title: "Deployment Scope"
+    variables:
+      - deployment_compartment_ocid
+
+  - title: "Networking - Secure VCN CIDRs"
+    variables:
+      - secure_vcn_cidr_blocks
+      - lb_subnet_cidr
+      - app_subnet_cidr
+      - db_subnet_cidr
+
+  - title: "Networking - Public VCN CIDRs"
+    variables:
+      - public_vcn_cidr_blocks
+      - public_subnet_cidr
+
+  - title: "IPSec - Enabled"
+    variables:
+      - ipsec_enabled
+
+  - title: "IPSec - Core"
+    visible: "${ipsec_enabled}"
+    variables:
+      - ipsec_cpe_public_ip
+      - ipsec_cpe_display_name
+      - ipsec_display_name
+
+  - title: "IPSec - Routing"
+    visible: "${ipsec_enabled}"
+    variables:
+      - ipsec_routing_type
+      - ipsec_onprem_cidrs
+      - ipsec_policy_local_selectors
+      - ipsec_policy_remote_selectors
+
+
+  - title: "IPSec - Tunnel parameters"
+    visible: "${ipsec_enabled}"
+    variables:
+      - ipsec_ike_version
+      - ipsec_nat_t_setting
+      - ipsec_dpd_timeout_in_seconds
+      - ipsec_phase1_encryption_algorithms
+      - ipsec_phase1_authentication_algorithms
+      - ipsec_phase1_dh_groups
+      - ipsec_phase1_lifetime_in_seconds
+      - ipsec_phase2_encryption_algorithms
+      - ipsec_phase2_authentication_algorithms
+      - ipsec_phase2_pfs_dh_groups
+      - ipsec_phase2_lifetime_in_seconds
+
+  - title: "IPSec - PSKs (optional)"
+    visible: "${ipsec_enabled}"
+    variables:
+      - ipsec_tunnel1_psk
+      - ipsec_tunnel2_psk
+
+variables:
+  tenancy_ocid:
+    type: oci:identity:tenancy:id
+    title: "Tenancy"
+    description: "OCID of the tenancy where resources will be created."
+    required: false
+
+  user_ocid:
+    type: oci:identity:user:id
+    title: "User OCID"
+    description: "OCID of the user owning the API key."
+    required: false
+
+  fingerprint:
+    type: string
+    title: "API key fingerprint"
+    description: "Fingerprint of the API key in the user's OCI console."
+    pattern: '^([0-9A-Fa-f]{2}:){1,31}[0-9A-Fa-f]{2}$'
+    required: false
+
+  private_key_path:
+    type: string
+    title: "Private key file path"
+    description: "Path to the private key file corresponding to the API key."
+    required: false
+
+  region:
+    type: oci:identity:region:name
+    title: "Region"
+    description: "Region in which to deploy resources."
+    required: false
+
+  deployment_compartment_ocid:
+    type: oci:identity:compartment:id
+    title: "Parent Compartment (optional)"
+    description: "If set, resources and child compartments are created under this compartment; otherwise defaults to tenancy root."
+    required: false
+
+  secure_vcn_cidr_blocks:
+    type: array
+    title: "Secure VCN CIDR blocks"
+    description: "CIDR blocks for the secure VCN."
+    required: true
+    items:
+      type: string
+      pattern: '^(?:(?:25[0-5]|2[0-4]\d|1?\d?\d)\.){3}(?:25[0-5]|2[0-4]\d|1?\d?\d)/(?:[0-9]|[12][0-9]|3[0-2])$'
+
+  lb_subnet_cidr:
+    type: string
+    title: "LB subnet CIDR"
+    required: true
+    pattern: '^(?:(?:25[0-5]|2[0-4]\d|1?\d?\d)\.){3}(?:25[0-5]|2[0-4]\d|1?\d?\d)/(?:[0-9]|[12][0-9]|3[0-2])$'
+
+  app_subnet_cidr:
+    type: string
+    title: "App subnet CIDR"
+    required: true
+    pattern: '^(?:(?:25[0-5]|2[0-4]\d|1?\d?\d)\.){3}(?:25[0-5]|2[0-4]\d|1?\d?\d)/(?:[0-9]|[12][0-9]|3[0-2])$'
+
+  db_subnet_cidr:
+    type: string
+    title: "DB subnet CIDR"
+    required: true
+    pattern: '^(?:(?:25[0-5]|2[0-4]\d|1?\d?\d)\.){3}(?:25[0-5]|2[0-4]\d|1?\d?\d)/(?:[0-9]|[12][0-9]|3[0-2])$'
+
+  ipsec_enabled:
+    type: boolean
+    title: "Enable IPSec"
+    description: "Create IPSec resources (CPE, IPsec connection, tunnels)."
+    default: false
+
+  ipsec_cpe_public_ip:
+    type: string
+    title: "On‑prem CPE public IP"
+    description: "Public IPv4 address of the on‑prem VPN device. Required when IPSec is enabled."
+    pattern: '^(?:(?:25[0-5]|2[0-4]\d|1?\d?\d)\.){3}(?:25[0-5]|2[0-4]\d|1?\d?\d)$'
+    visible: "${ipsec_enabled}"
+
+  ipsec_cpe_display_name:
+    type: string
+    title: "CPE display name"
+    default: "onprem-cpe"
+    visible: "${ipsec_enabled}"
+
+  ipsec_display_name:
+    type: string
+    title: "IPSec connection display name"
+    default: "site-to-site-ipsec"
+    visible: "${ipsec_enabled}"
+
+  ipsec_routing_type:
+    type: enum
+    title: "IPSec routing type"
+    enum:
+      - STATIC
+      - POLICY
+#      - BGP
+    default: STATIC
+    visible: "${ipsec_enabled}"
+
+  ipsec_onprem_cidrs:
+    type: array
+    title: "On-prem prefixes (for STATIC routing)"
+    description: "Prefixes routed to the DRG and used in VCN routes when STATIC routing."
+    items:
+      type: string
+      pattern: '^(?:(?:25[0-5]|2[0-4]\d|1?\d?\d)\.){3}(?:25[0-5]|2[0-4]\d|1?\d?\d)/(?:[0-9]|[12][0-9]|3[0-2])$'
+    visible: "${ipsec_enabled && ipsec_routing_type == 'STATIC'}"
+
+  ipsec_policy_based_enabled:
+    type: boolean
+    title: "Enable policy-based selectors"
+    default: false
+    visible: false
+
+  ipsec_policy_local_selectors:
+    type: array
+    title: "Local (VCN) CIDR selectors (for Policy-Based routing)"
+    items:
+      type: string
+      pattern: '^(?:(?:25[0-5]|2[0-4]\d|1?\d?\d)\.){3}(?:25[0-5]|2[0-4]\d|1?\d?\d)/(?:[0-9]|[12][0-9]|3[0-2])$'
+    visible:
+      and:
+        - "${ipsec_enabled}"
+        - eq:
+          - "${ipsec_routing_type}"
+          - "POLICY"
+
+  ipsec_policy_remote_selectors:
+    type: array
+    title: "Remote (on-prem) CIDR selectors (for Policy-Based routing)"
+    items:
+      type: string
+      pattern: '^(?:(?:25[0-5]|2[0-4]\d|1?\d?\d)\.){3}(?:25[0-5]|2[0-4]\d|1?\d?\d)/(?:[0-9]|[12][0-9]|3[0-2])$'
+    visible:
+      and:
+        - "${ipsec_enabled}"
+        - eq:
+          - "${ipsec_routing_type}"
+          - "POLICY"
+
+  ipsec_ike_version:
+    type: string
+    title: "IKE version"
+    enum:
+      - V1
+      - V2
+    default: V2
+    visible: "${ipsec_enabled}"
+
+  ipsec_nat_t_setting:
+    type: string
+    title: "NAT-T setting"
+    enum:
+      - AUTO
+      - ENABLED
+      - DISABLED
+    default: ENABLED
+    visible: "${ipsec_enabled}"
+
+  ipsec_dpd_timeout_in_seconds:
+    type: integer
+    title: "DPD timeout (seconds)"
+    default: 30
+    minimum: 1
+    visible: "${ipsec_enabled}"
+
+  ipsec_phase1_encryption_algorithms:
+    type: array
+    title: "Phase 1 (IKE) encryption algorithms"
+    default:
+      - AES_256_CBC
+    items:
+      type: string
+    visible: "${ipsec_enabled}"
+
+  ipsec_phase1_authentication_algorithms:
+    type: array
+    title: "Phase 1 (IKE) authentication algorithms"
+    default:
+      - SHA2_384
+    items:
+      type: string
+    visible: "${ipsec_enabled}"
+
+  ipsec_phase1_dh_groups:
+    type: array
+    title: "Phase 1 (IKE) DH groups"
+    default:
+      - GROUP20
+    items:
+      type: string
+    visible: "${ipsec_enabled}"
+
+  ipsec_phase1_lifetime_in_seconds:
+    type: integer
+    title: "Phase 1 (IKE) SA lifetime (seconds)"
+    default: 28800
+    minimum: 60
+    visible: "${ipsec_enabled}"
+
+  ipsec_phase2_encryption_algorithms:
+    type: array
+    title: "Phase 2 (IPSec) encryption algorithms"
+    default:
+      - AES_256_GCM
+    items:
+      type: string
+    visible: "${ipsec_enabled}"
+
+  ipsec_phase2_authentication_algorithms:
+    type: array
+    title: "Phase 2 (IPSec) authentication algorithms"
+    default:
+      - HMAC_SHA2_256_128
+    items:
+      type: string
+    visible: "${ipsec_enabled}"
+
+  ipsec_phase2_pfs_dh_groups:
+    type: array
+    title: "Phase 2 (IPSec) PFS DH groups"
+    default:
+      - GROUP5
+    items:
+      type: string
+    visible: "${ipsec_enabled}"
+
+  ipsec_phase2_lifetime_in_seconds:
+    type: integer
+    title: "Phase 2 (IPSec) SA lifetime (seconds)"
+    default: 3600
+    minimum: 60
+    visible: "${ipsec_enabled}"
+
+  ipsec_tunnel1_psk:
+    type: string
+    title: "Tunnel 1 PSK (optional) - Only letters, numbers, spaces are allowed"
+    sensitive: true
+    pattern: '^[A-Za-z0-9 ]*$'
+    visible: "${ipsec_enabled}"
+
+  ipsec_tunnel2_psk:
+    type: string
+    title: "Tunnel 2 PSK (optional) - Only letters, numbers, spaces are allowed"
+    sensitive: true
+    pattern: '^[A-Za-z0-9 ]*$'
+    visible: "${ipsec_enabled}"

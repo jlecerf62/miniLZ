@@ -1,6 +1,6 @@
 locals {
-  public_vcn_cidr_blocks     = ["10.0.0.0/16"]
-  public_subnet_cidr         = "10.0.1.0/24"
+  public_vcn_cidr_blocks     = var.public_vcn_cidr_blocks
+  public_subnet_cidr         = var.public_subnet_cidr
   public_vcn_display_name    = "public-vcn"
   public_vcn_dns_label       = "pubvcn"
   public_subnet_display_name = "public-subnet"

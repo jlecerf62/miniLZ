@@ -1,26 +1,31 @@
 variable "tenancy_ocid" {
   description = "tenancy_ocid"
   type        = string
+  default     = null # For OCI Resource Manager
 }
 
 variable "user_ocid" {
   description = "user_ocid"
   type        = string
+  default     = null # For OCI Resource Manager
 }
 
 variable "fingerprint" {
   description = "fingerprint"
   type        = string
+  default     = null # For OCI Resource Manager
 }
 
 variable "private_key_path" {
   description = "private_key_path"
   type        = string
+  default     = null # For OCI Resource Manager
 }
 
 variable "region" {
   description = "tenancy_ocid"
   type        = string
+  default     = null # For OCI Resource Manager
 }
 
 # Optional: deploy under a specific parent compartment instead of tenancy root.
@@ -29,6 +34,18 @@ variable "deployment_compartment_ocid" {
   description = "OCID of the parent compartment under which this stack creates its child compartments and related resources. If unset, defaults to tenancy_ocid."
   type        = string
   default     = null
+}
+
+variable "public_vcn_cidr_blocks" {
+  description = "CIDR blocks for the public VCN"
+  type        = list(string)
+  default = ["10.0.0.0/16"]
+}
+
+variable "public_subnet_cidr" {
+  description = "CIDR for the public subnet"
+  type        = string
+  default = "10.0.0.0/24"
 }
 
 variable "secure_vcn_cidr_blocks" {
@@ -66,8 +83,8 @@ variable "ipsec_cpe_public_ip" {
   type        = string
   default     = null
   validation {
-    condition     = var.ipsec_enabled ? (var.ipsec_cpe_public_ip != null && can(regex("^([0-9]{1,3}\\.){3}[0-9]{1,3}$", var.ipsec_cpe_public_ip))) : true
-    error_message = "When ipsec_enabled is true, ipsec_cpe_public_ip must be set to a valid IPv4 address."
+    condition     = var.ipsec_cpe_public_ip == null || can(regex("^([0-9]{1,3}\\.){3}[0-9]{1,3}$", var.ipsec_cpe_public_ip))
+    error_message = "ipsec_cpe_public_ip must be a valid IPv4 address (e.g., 203.0.113.10) or null."
   }
 }
 
@@ -109,13 +126,13 @@ variable "ipsec_policy_based_enabled" {
 variable "ipsec_policy_local_selectors" {
   description = "Local (VCN) CIDR selectors for policy-based tunnels."
   type        = list(string)
-  default     = []
+  default     = null
 }
 
 variable "ipsec_policy_remote_selectors" {
   description = "Remote (on-prem) CIDR selectors for policy-based tunnels."
   type        = list(string)
-  default     = []
+  default     = null
 }
 
 # Tunnel parameters (with defaults)
