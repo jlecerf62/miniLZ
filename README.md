@@ -9,7 +9,7 @@ This Terraform stack provisions:
 - IPSec Site-to-Site VPN (CPE, IPsec connection, per-tunnel management) with most parameters exposed as variables
 - Default routing mode: STATIC, with option to use POLICY-based selectors (and room to extend to BGP)
 
-[![Deploy to Oracle Cloud](https://oci-resourcemanager-plugin.plugins.oci.oraclecloud.com/latest/deploy-to-oracle-cloud.svg)](https://cloud.oracle.com/resourcemanager/stacks/create?zipUrl=https://github.com/jlecerf62/miniLZ/releases/download/latest/miniLZ.zip)
+[![Deploy to Oracle Cloud](https://oci-resourcemanager-plugin.plugins.oci.oraclecloud.com/latest/deploy-to-oracle-cloud.svg)](https://cloud.oracle.com/resourcemanager/stacks/create?zipUrl=https://github.com/jlecerf62/miniLZ/releases/latest/download/miniLZ.zip)
 
 ## Topology
 
