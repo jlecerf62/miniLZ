@@ -181,7 +181,12 @@ variables:
     items:
       type: string
       pattern: '^(?:(?:25[0-5]|2[0-4]\d|1?\d?\d)\.){3}(?:25[0-5]|2[0-4]\d|1?\d?\d)/(?:[0-9]|[12][0-9]|3[0-2])$'
-    visible: "${ipsec_enabled && ipsec_routing_type == 'STATIC'}"
+    visible: 
+      and:
+        - "${ipsec_enabled}"
+        - eq:
+            - "${ipsec_routing_type}"
+            - "STATIC"
 
   ipsec_policy_based_enabled:
     type: boolean
@@ -216,7 +221,7 @@ variables:
           - "POLICY"
 
   ipsec_ike_version:
-    type: string
+    type: enum
     title: "IKE version"
     enum:
       - V1
@@ -225,88 +230,125 @@ variables:
     visible: "${ipsec_enabled}"
 
   ipsec_nat_t_setting:
-    type: string
+    type: enum
     title: "NAT-T setting"
     enum:
       - AUTO
       - ENABLED
       - DISABLED
-    default: ENABLED
+    default: AUTO
     visible: "${ipsec_enabled}"
 
   ipsec_dpd_timeout_in_seconds:
     type: integer
     title: "DPD timeout (seconds)"
-    default: 30
-    minimum: 1
+    default: 20
+    minimum: 10
+    maximum: 300
     visible: "${ipsec_enabled}"
 
   ipsec_phase1_encryption_algorithms:
-    type: array
+    type: enum
     title: "Phase 1 (IKE) encryption algorithms"
+    enum:
+      - AES_192_CBC
+      - AES_256_CBC
+      - AES_192_GCM
+      - AES_128_GCM
+      - AES_256_GCM
     default:
       - AES_256_CBC
-    items:
-      type: string
     visible: "${ipsec_enabled}"
 
   ipsec_phase1_authentication_algorithms:
-    type: array
+    type: enum
     title: "Phase 1 (IKE) authentication algorithms"
+    enum: 
+      - SHA2_256
+      - SHA2_512
+      - SHA1_96
+      - SHA2_384
     default:
       - SHA2_384
-    items:
-      type: string
     visible: "${ipsec_enabled}"
 
   ipsec_phase1_dh_groups:
-    type: array
+    type: enum
     title: "Phase 1 (IKE) DH groups"
+    enum:
+      - GROUP2
+      - GROUP20
+      - GROUP5
+      - GROUP24
+      - GROUP14
+      - GROUP19
     default:
       - GROUP20
-    items:
-      type: string
     visible: "${ipsec_enabled}"
 
   ipsec_phase1_lifetime_in_seconds:
     type: integer
     title: "Phase 1 (IKE) SA lifetime (seconds)"
     default: 28800
-    minimum: 60
+    minimum: 1081
     visible: "${ipsec_enabled}"
 
   ipsec_phase2_encryption_algorithms:
-    type: array
+    type: enum
     title: "Phase 2 (IPSec) encryption algorithms"
+    enum: 
+      - AES_192_CBC
+      - AES_192_GCM
+      - AES_256_CBC
+      - AES_128_GCM
+      - AES_128_CBC
+      - AES_256_GCM
     default:
       - AES_256_GCM
-    items:
-      type: string
     visible: "${ipsec_enabled}"
 
   ipsec_phase2_authentication_algorithms:
-    type: array
+    type: enum
     title: "Phase 2 (IPSec) authentication algorithms"
+    enum:
+      - HMAC_SHA1_128
+      - HMAC_SHA2_256_128
     default:
       - HMAC_SHA2_256_128
-    items:
-      type: string
-    visible: "${ipsec_enabled}"
+    visible:
+      and: 
+      - "${ipsec_enabled}"
+      - and:
+          - or:
+              - eq:
+                - "${ipsec_phase2_encryption_algorithms}"
+                - "AES_192_CBC"
+              - eq:
+                - "${ipsec_phase2_encryption_algorithms}"
+                - "AES_256_CBC"
+              - eq:
+                  - "${ipsec_phase2_encryption_algorithms}"
+                  - "AES_128_CBC"
 
   ipsec_phase2_pfs_dh_groups:
-    type: array
+    type: enum
     title: "Phase 2 (IPSec) PFS DH groups"
+    enum: 
+      - GROUP2
+      - GROUP20
+      - GROUP5
+      - GROUP24
+      - GROUP14
+      - GROUP19
     default:
       - GROUP5
-    items:
-      type: string
     visible: "${ipsec_enabled}"
 
   ipsec_phase2_lifetime_in_seconds:
     type: integer
     title: "Phase 2 (IPSec) SA lifetime (seconds)"
     default: 3600
-    minimum: 60
+    minimum: 1081
     visible: "${ipsec_enabled}"
 
   ipsec_tunnel1_psk:
