@@ -93,7 +93,7 @@ resource "oci_core_ipsec_connection_tunnel_management" "tunnel1" {
 
   lifecycle {
     precondition {
-      condition     = var.ipsec_routing_type != "POLICY" || (
+      condition = var.ipsec_routing_type != "POLICY" || (
         (var.ipsec_policy_local_selectors != null ? length(var.ipsec_policy_local_selectors) : 0) > 0 &&
         (var.ipsec_policy_remote_selectors != null ? length(var.ipsec_policy_remote_selectors) : 0) > 0
       )
@@ -148,7 +148,7 @@ resource "oci_core_ipsec_connection_tunnel_management" "tunnel2" {
 
   lifecycle {
     precondition {
-      condition     = var.ipsec_routing_type != "POLICY" || (
+      condition = var.ipsec_routing_type != "POLICY" || (
         (var.ipsec_policy_local_selectors != null ? length(var.ipsec_policy_local_selectors) : 0) > 0 &&
         (var.ipsec_policy_remote_selectors != null ? length(var.ipsec_policy_remote_selectors) : 0) > 0
       )

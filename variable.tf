@@ -39,13 +39,13 @@ variable "deployment_compartment_ocid" {
 variable "public_vcn_cidr_blocks" {
   description = "CIDR blocks for the public VCN"
   type        = list(string)
-  default = ["10.0.0.0/16"]
+  default     = ["10.0.0.0/16"]
 }
 
 variable "public_subnet_cidr" {
   description = "CIDR for the public subnet"
   type        = string
-  default = "10.0.0.0/24"
+  default     = "10.0.0.0/24"
 }
 
 variable "secure_vcn_cidr_blocks" {
@@ -149,7 +149,7 @@ variable "ipsec_ike_version" {
 variable "ipsec_nat_t_setting" {
   description = "NAT-T setting for tunnels (ENABLED, DISABLED, or AUTO)."
   type        = string
-  default     = "ENABLED"
+  default     = "AUTO"
   validation {
     condition     = contains(["ENABLED", "DISABLED", "AUTO"], var.ipsec_nat_t_setting)
     error_message = "ipsec_nat_t_setting must be one of: ENABLED, DISABLED, AUTO"
@@ -159,7 +159,7 @@ variable "ipsec_nat_t_setting" {
 variable "ipsec_dpd_timeout_in_seconds" {
   description = "DPD timeout in seconds for tunnels."
   type        = number
-  default     = 30
+  default     = 20
 }
 
 # Phase 1 (IKE) parameters
@@ -225,4 +225,10 @@ variable "ipsec_tunnel2_psk" {
   type        = string
   default     = null
   sensitive   = true
+}
+
+variable "admin_users" {
+  description = "Email addresses to create as users in the default Identity Domain (username = email), add to Administrators group, and subscribe to announcements."
+  type        = list(string)
+  default     = []
 }

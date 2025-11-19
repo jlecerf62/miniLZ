@@ -70,6 +70,10 @@ variableGroups:
       - ipsec_tunnel1_psk
       - ipsec_tunnel2_psk
 
+  - title: "IAM - Admin Users"
+    variables:
+      - admin_users
+
 variables:
   tenancy_ocid:
     type: oci:identity:tenancy:id
@@ -318,3 +322,12 @@ variables:
     sensitive: true
     pattern: '^[A-Za-z0-9 ]*$'
     visible: "${ipsec_enabled}"
+
+  admin_users:
+    type: array
+    title: "OCI Admin User Emails"
+    description: "Email addresses to create as users (username = email), add to Administrators group, and subscribe to all tenancy announcements."
+    required: false
+    items:
+      type: string
+      pattern: '^[^ @]+@[^ @]+[.][^ @]+$'
