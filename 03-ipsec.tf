@@ -8,6 +8,13 @@ resource "oci_core_cpe" "onprem_cpe" {
   compartment_id = oci_identity_compartment.secure_compartment.id
   ip_address     = var.ipsec_cpe_public_ip
   display_name   = var.ipsec_cpe_display_name
+
+  lifecycle {
+    precondition {
+      condition     = !var.ipsec_enabled || (var.ipsec_cpe_public_ip != null && can(regex("^([0-9]{1,3}\\.){3}[0-9]{1,3}$", var.ipsec_cpe_public_ip)))
+      error_message = "When ipsec_enabled is true, ipsec_cpe_public_ip must be set to a valid IPv4 address."
+    }
+  }
 }
 
 ############################################
@@ -25,6 +32,13 @@ resource "oci_core_ipsec" "site_to_site" {
   # If using STATIC routing, provide on-prem CIDR prefixes as static routes.
   # Leave empty for BGP routing (routing mode is set per tunnel).
   static_routes = var.ipsec_routing_type == "STATIC" ? var.ipsec_onprem_cidrs : []
+
+  lifecycle {
+    precondition {
+      condition     = var.ipsec_routing_type != "STATIC" || length(var.ipsec_onprem_cidrs) > 0
+      error_message = "When STATIC routing is selected, ipsec_onprem_cidrs must contain at least one prefix."
+    }
+  }
 }
 
 ############################################
@@ -77,6 +91,16 @@ resource "oci_core_ipsec_connection_tunnel_management" "tunnel1" {
     }
   }
 
+  lifecycle {
+    precondition {
+      condition     = var.ipsec_routing_type != "POLICY" || (
+        (var.ipsec_policy_local_selectors != null ? length(var.ipsec_policy_local_selectors) : 0) > 0 &&
+        (var.ipsec_policy_remote_selectors != null ? length(var.ipsec_policy_remote_selectors) : 0) > 0
+      )
+      error_message = "When POLICY routing is selected, both local and remote selector lists must be set and non-empty."
+    }
+  }
+
   shared_secret = var.ipsec_tunnel1_psk
 }
 
@@ -119,6 +143,16 @@ resource "oci_core_ipsec_connection_tunnel_management" "tunnel2" {
     content {
       oracle_traffic_selector = var.ipsec_policy_local_selectors
       cpe_traffic_selector    = var.ipsec_policy_remote_selectors
+    }
+  }
+
+  lifecycle {
+    precondition {
+      condition     = var.ipsec_routing_type != "POLICY" || (
+        (var.ipsec_policy_local_selectors != null ? length(var.ipsec_policy_local_selectors) : 0) > 0 &&
+        (var.ipsec_policy_remote_selectors != null ? length(var.ipsec_policy_remote_selectors) : 0) > 0
+      )
+      error_message = "When POLICY routing is selected, both local and remote selector lists must be set and non-empty."
     }
   }
 
